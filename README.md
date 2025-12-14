@@ -14,7 +14,7 @@
 
 ## 📱 Live Demo
 
-**👉 [Launch Simulator](https://sbcm-alliance.github.io/SBCM-Global-Scanner/)**
+**👉 [Launch Simulator](https://sbcm-alliance.github.io/SBCM-Simulator/)**
 *(Runs entirely in your browser via WebAssembly)*
 
 | **The Ruin (Current Trajectory)** | **The Solution (G-Cart Optimization)** |
