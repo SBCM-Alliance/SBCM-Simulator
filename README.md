@@ -19,7 +19,7 @@
 
 | **The Ruin (Current Trajectory)** | **The Solution (G-Cart Optimization)** |
 | :---: | :---: |
-| <img src="docs/demo_ruin.png" width="400" alt="Red City"> | <img src="docs/demo_gold.png" width="400" alt="Gold City"> |
+| <img src="images/demo_ruin.jpg" width="400" alt="Red City"> | <img src="images/demo_gold.jpg" width="400" alt="Gold City"> |
 | *Without flow control, wealth leaks out ($R_{block} \approx 10\%$), leading to fiscal collapse.* | *With mesh refinement, wealth circulates ($R_{block} \approx 95\%$), creating sustainability.* |
 
 ---
