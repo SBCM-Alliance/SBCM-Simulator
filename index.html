@@ -48,6 +48,9 @@
             display: flex; flex-direction: column; gap: 10px;
             box-shadow: 10px 0 30px rgba(0, 0, 0, 0.5);
             overflow-y: auto;
+            /* iOSスクロール対策 */
+            -webkit-overflow-scrolling: touch; 
+            padding-bottom: 50px; /* 下部余白確保 */
         }
         
         #map { flex-grow: 1; }
@@ -101,13 +104,17 @@
         .warn { color: #ffff00; }
         .danger { color: #ff0055; text-shadow: 0 0 15px rgba(255,0,85,0.5); }
 
-        /* BUTTONS */
-        .btn-group { display: flex; gap: 5px; margin-top: auto; }
-        button {
-            flex: 1; padding: 10px; border: none; border-radius: 3px;
-            font-family: inherit; font-weight: bold; cursor: pointer; transition: 0.2s;
+        /* BUTTONS (Fixed Position) */
+        .btn-group { 
+            display: flex; gap: 5px; margin-top: 10px; /* 直下に配置 */
+            width: 100%;
         }
-        #btn-play { background: #00ffff; }
+        button {
+            flex: 1; padding: 12px; border: none; border-radius: 4px;
+            font-family: inherit; font-weight: bold; cursor: pointer; transition: 0.2s;
+            font-size: 0.9rem;
+        }
+        #btn-play { background: #00ffff; color: #000; }
         #btn-pause { background: #444; color: #fff; }
         #btn-reset { background: #333; color: #aaa; }
         button:hover { filter: brightness(1.2); }
@@ -218,11 +225,14 @@
             <span id="risk-msg" class="risk-desc">Sustainable</span>
         </div>
 
+        <!-- CONTROL BUTTONS (MOVED HERE) -->
         <div class="btn-group">
             <button id="btn-play" py-click="play"><i class="fas fa-play"></i> RUN</button>
             <button id="btn-pause" py-click="pause"><i class="fas fa-pause"></i> STOP</button>
             <button id="btn-reset" py-click="reset">RESET</button>
         </div>
+
+        <div style="height:20px;"></div> <!-- Spacer -->
     </div>
 
     <div id="map"></div>
@@ -266,7 +276,6 @@
         import random
 
         # --- CONFIG: CURRENCY & LANG ---
-        # Fixed Dictionary to prevent mismatch bugs
         CURRENCY_CONFIG = {
             "jpy": {"prefix": "",   "suffix": " 億円", "label": "[億円/年]"},
             "usd": {"prefix": "$ ", "suffix": " M",   "label": "[$ M/year]"},
@@ -316,19 +325,17 @@
             val = document.getElementById("lang-select").value
             state["lang"] = val
             
-            # Currency Logic
             curr_sel = document.getElementById("curr-select")
             if val == "jp":
                 curr_sel.value = "jpy"
                 state["curr"] = "jpy"
                 curr_sel.disabled = True
             else:
-                if state["curr"] == "jpy": # Switch default to USD if moving from JP
+                if state["curr"] == "jpy": 
                     curr_sel.value = "usd"
                     state["curr"] = "usd"
                 curr_sel.disabled = False
 
-            # Apply Text
             for key, t_map in TRANS.items():
                 el = document.getElementById(key)
                 if el:
@@ -369,11 +376,9 @@
 
         # --- RENDER UI ---
         def update_ui():
-            # 1. Currency Config
             conf = CURRENCY_CONFIG[state["curr"]]
             document.getElementById("unit-cost").innerText = conf["label"]
             
-            # 2. Stats
             document.getElementById("year-disp").innerText = str(state["year"])
             document.getElementById("val-scale").innerText = f"{state['s_factor']:.2f}"
 
@@ -382,17 +387,14 @@
             el_ret.innerText = f"{r_pct}%"
             el_ret.style.color = "#00ff41" if r_pct > 80 else "#ff0055"
 
-            # 3. Real Value with strict currency formatting
             el_val = document.getElementById("val-value")
             val_str = f"{conf['prefix']}{state['real_val']:.1f}{conf['suffix']}"
             el_val.innerText = val_str
             
-            # Color
             if state["g_cart"] and state["d_index"] < 5.0: el_val.className = "stat-val gold"
             elif state["real_val"] < (state["cost"] * 0.2): el_val.className = "stat-val danger"
             else: el_val.className = "stat-val safe"
 
-            # 4. Risk
             d_val = state["d_index"]
             el_risk = document.getElementById("val-risk")
             el_msg = document.getElementById("risk-msg")
@@ -414,11 +416,10 @@
             features = []
             grid = 5
             center = 2.5
-            
             d_val = state["d_index"]
             r_val = state["r_block"]
-            stability = (r_val * 10) / d_val
             
+            stability = (r_val * 10) / d_val
             decay = 1.0
             if stability < 0.5: decay = max(0.1, stability)
             
@@ -499,7 +500,6 @@
         # --- INIT ---
         change_lang(None)
         
-        # Loader Fadeout
         async def fade_out():
             await asyncio.sleep(0.5)
             loader = document.getElementById("loader")
